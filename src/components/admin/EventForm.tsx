@@ -1,4 +1,3 @@
-
 'use client'
 
 import { useState } from 'react'
@@ -35,7 +34,7 @@ export default function EventForm() {
   const [imageUrl, setImageUrl] = useState('')
   const [sourceLink, setSourceLink] = useState('')
   const [youtubeLink, setYoutubeLink] = useState('')
-  const [locationCategory, setLocationCategory] = useState('') // Added state
+  const [locationCategory, setLocationCategory] = useState('')
 
   // Specific Fields
   const [title, setTitle] = useState('')
@@ -79,7 +78,7 @@ export default function EventForm() {
       image_url: imageUrl || null,
       source_link: sourceLink || null,
       youtube_link: youtubeLink || null,
-      location_category: locationCategory || null, // Added to payload
+      location_category: locationCategory || null,
       lat,
       lng
     }
@@ -90,14 +89,14 @@ export default function EventForm() {
     switch (category) {
       case 'General Event':
         tableName = 'events'
-        payload = { ...commonPayload, title, event_date: eventDate || null }
+        payload = { ...commonPayload, title: title || null, event_date: eventDate || null }
         break
       case 'Bombing':
         tableName = 'bombings'
         payload = {
           ...commonPayload,
-          location, target_type: targetType, event_date: eventDate || null,
-          explosive_type: explosiveType, perpetrator_faction: perpetratorFaction,
+          location, target_type: targetType || null, event_date: eventDate || null,
+          explosive_type: explosiveType || null, perpetrator_faction: perpetratorFaction || null,
           casualty_count: casualtyCount || 0
         }
         break
@@ -105,8 +104,8 @@ export default function EventForm() {
         tableName = 'massacres'
         payload = {
           ...commonPayload,
-          location, event_date: eventDate || null, perpetrator_faction: perpetratorFaction,
-          victim_demographic: victimDemographic, casualty_count: casualtyCount || 0, weapons_used: weaponsUsed
+          location, event_date: eventDate || null, perpetrator_faction: perpetratorFaction || null,
+          victim_demographic: victimDemographic || null, casualty_count: casualtyCount || 0, weapons_used: weaponsUsed || null
         }
         break
       case 'Protest':
@@ -114,30 +113,30 @@ export default function EventForm() {
         payload = {
           ...commonPayload,
           location, event_date: eventDate || null, estimated_participants: estimatedParticipants || 0,
-          demands, security_response: securityResponse, casualties: casualtyCount || 0
+          demands: demands || null, security_response: securityResponse || null, casualties: casualtyCount || 0
         }
         break
       case 'Assassination':
         tableName = 'assassinations'
         payload = {
           ...commonPayload,
-          target_name: targetName, target_affiliation: targetAffiliation, perpetrator_name: perpetratorName,
-          event_date: eventDate || null, location, method
+          target_name: targetName || null, target_affiliation: targetAffiliation || null, perpetrator_name: perpetratorName || null,
+          event_date: eventDate || null, location, method: method || null
         }
         break
       case 'Arrest':
         tableName = 'arrests'
         payload = {
           ...commonPayload,
-          detainee_name: detaineeName, detainee_affiliation: detaineeAffiliation, arresting_faction: arrestingFaction,
-          date_of_arrest: dateOfArrest || null, date_of_release: dateOfRelease || null, detention_facility: detentionFacility, fate
+          detainee_name: detaineeName || null, detainee_affiliation: detaineeAffiliation || null, arresting_faction: arrestingFaction || null,
+          date_of_arrest: dateOfArrest || null, date_of_release: dateOfRelease || null, detention_facility: detentionFacility || null, fate: fate || null
         }
         break
       case 'Regime Change':
         tableName = 'regime_changes'
         payload = {
           ...commonPayload,
-          event_name: eventName, event_date: eventDate || null, leader_taking_power: leaderTakingPower, leader_ousted: leaderOusted
+          event_name: eventName || null, event_date: eventDate || null, leader_taking_power: leaderTakingPower || null, leader_ousted: leaderOusted || null
         }
         break
     }
@@ -211,7 +210,7 @@ export default function EventForm() {
           {category === 'General Event' && (
             <div>
               <label className={labelClass}>Title</label>
-              <input type="text" value={title} onChange={e => setTitle(e.target.value)} className={inputClass} required />
+              <input type="text" value={title} onChange={e => setTitle(e.target.value)} className={inputClass} />
             </div>
           )}
 
@@ -283,7 +282,7 @@ export default function EventForm() {
             <>
               <div>
                 <label className={labelClass}>Target Name</label>
-                <input type="text" value={targetName} onChange={e => setTargetName(e.target.value)} className={inputClass} required />
+                <input type="text" value={targetName} onChange={e => setTargetName(e.target.value)} className={inputClass} />
               </div>
               <div>
                 <label className={labelClass}>Target Affiliation</label>
@@ -304,7 +303,7 @@ export default function EventForm() {
             <>
               <div>
                 <label className={labelClass}>Detainee Name</label>
-                <input type="text" value={detaineeName} onChange={e => setDetaineeName(e.target.value)} className={inputClass} required />
+                <input type="text" value={detaineeName} onChange={e => setDetaineeName(e.target.value)} className={inputClass} />
               </div>
               <div>
                 <label className={labelClass}>Detainee Affiliation</label>
@@ -337,7 +336,7 @@ export default function EventForm() {
             <>
               <div>
                 <label className={labelClass}>Event Name</label>
-                <input type="text" value={eventName} onChange={e => setEventName(e.target.value)} className={inputClass} required />
+                <input type="text" value={eventName} onChange={e => setEventName(e.target.value)} className={inputClass} />
               </div>
               <div>
                 <label className={labelClass}>Leader Taking Power</label>
