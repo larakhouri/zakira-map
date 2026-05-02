@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useState } from 'react'
@@ -7,7 +8,7 @@ import toast from 'react-hot-toast'
 
 const MapPicker = dynamic(() => import('./MapPicker'), {
   ssr: false,
-  loading: () => <div className="h-[400px] w-full bg-stone-100 animate-pulse rounded-lg flex items-center justify-center text-stone-500 font-medium">Loading map...</div>
+  loading: () => <div className="h-[400px] w-full bg-zinc-900 animate-pulse rounded-lg flex items-center justify-center text-zinc-400 font-medium">Loading map...</div>
 })
 
 const CATEGORIES = [
@@ -28,12 +29,13 @@ export default function EventForm() {
   const [loading, setLoading] = useState(false)
   const [lat, setLat] = useState<number | null>(null)
   const [lng, setLng] = useState<number | null>(null)
-  
+
   // Common Fields
   const [description, setDescription] = useState('')
   const [imageUrl, setImageUrl] = useState('')
   const [sourceLink, setSourceLink] = useState('')
   const [youtubeLink, setYoutubeLink] = useState('')
+  const [locationCategory, setLocationCategory] = useState('') // Added state
 
   // Specific Fields
   const [title, setTitle] = useState('')
@@ -77,6 +79,7 @@ export default function EventForm() {
       image_url: imageUrl || null,
       source_link: sourceLink || null,
       youtube_link: youtubeLink || null,
+      location_category: locationCategory || null, // Added to payload
       lat,
       lng
     }
@@ -91,11 +94,11 @@ export default function EventForm() {
         break
       case 'Bombing':
         tableName = 'bombings'
-        payload = { 
-          ...commonPayload, 
-          location, target_type: targetType, event_date: eventDate || null, 
-          explosive_type: explosiveType, perpetrator_faction: perpetratorFaction, 
-          casualty_count: casualtyCount || 0 
+        payload = {
+          ...commonPayload,
+          location, target_type: targetType, event_date: eventDate || null,
+          explosive_type: explosiveType, perpetrator_faction: perpetratorFaction,
+          casualty_count: casualtyCount || 0
         }
         break
       case 'Massacre':
@@ -147,44 +150,57 @@ export default function EventForm() {
     } else {
       toast.success('Event saved successfully!')
     }
-    
+
     setLoading(false)
   }
 
-  const inputClass = "w-full px-4 py-2 border border-stone-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500 bg-white transition-colors"
-  const labelClass = "block text-sm font-medium text-slate-700 mb-1"
+  const inputClass = "w-full px-4 py-2 border border-zinc-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:border-zinc-500 bg-zinc-900 text-white placeholder-zinc-500 transition-colors"
+  const labelClass = "block text-sm font-medium text-zinc-300 mb-1"
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 bg-stone-50 p-6 sm:p-8 rounded-xl border border-stone-200 shadow-sm">
+    <form onSubmit={handleSubmit} className="space-y-8 bg-zinc-950 p-6 sm:p-8 rounded-xl border border-zinc-900 shadow-sm">
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-slate-800 border-b border-stone-200 pb-2">Location</h2>
+        <h2 className="text-xl font-semibold text-white border-b border-zinc-800 pb-2">Location</h2>
         <MapPicker onLocationSelect={handleLocationSelect} />
-        
+
         {lat && lng && (
-          <div className="flex gap-4 text-sm text-stone-600 bg-white p-3 rounded-lg border border-stone-200 shadow-sm">
-            <div><span className="font-medium text-slate-700">Lat:</span> {lat.toFixed(5)}</div>
-            <div><span className="font-medium text-slate-700">Lng:</span> {lng.toFixed(5)}</div>
+          <div className="flex gap-4 text-sm text-zinc-400 bg-zinc-900 p-3 rounded-lg border border-zinc-800 shadow-sm">
+            <div><span className="font-medium text-zinc-200">Lat:</span> {lat.toFixed(5)}</div>
+            <div><span className="font-medium text-zinc-200">Lng:</span> {lng.toFixed(5)}</div>
           </div>
         )}
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-slate-800 border-b border-stone-200 pb-2">Event Details</h2>
-        
-        <div>
-          <label className={labelClass}>Event Category</label>
-          <select 
-            value={category} 
-            onChange={(e) => setCategory(e.target.value as Category)}
-            className={inputClass}
-          >
-            {CATEGORIES.map(cat => (
-              <option key={cat} value={cat}>{cat}</option>
-            ))}
-          </select>
-        </div>
+        <h2 className="text-xl font-semibold text-white border-b border-zinc-800 pb-2">Event Details</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className={labelClass}>Event Category</label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value as Category)}
+              className={inputClass}
+            >
+              {CATEGORIES.map(cat => (
+                <option key={cat} value={cat} className="bg-zinc-900 text-white">{cat}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className={labelClass}>Location Category</label>
+            <input
+              type="text"
+              value={locationCategory}
+              onChange={e => setLocationCategory(e.target.value)}
+              className={inputClass}
+              placeholder="e.g., Urban, Rural, Camp"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           {(category === 'General Event' || category === 'Bombing' || category === 'Massacre' || category === 'Protest' || category === 'Assassination' || category === 'Regime Change') && (
             <div>
               <label className={labelClass}>Event Date</label>
@@ -337,18 +353,18 @@ export default function EventForm() {
       </div>
 
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-slate-800 border-b border-stone-200 pb-2">Additional Information</h2>
-        
+        <h2 className="text-xl font-semibold text-white border-b border-zinc-800 pb-2">Additional Information</h2>
+
         <div>
           <label className={labelClass}>Description</label>
-          <textarea 
-            value={description} 
-            onChange={e => setDescription(e.target.value)} 
-            rows={4} 
-            className={inputClass} 
+          <textarea
+            value={description}
+            onChange={e => setDescription(e.target.value)}
+            rows={4}
+            className={inputClass}
           />
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label className={labelClass}>Image URL</label>
@@ -368,7 +384,7 @@ export default function EventForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full md:w-auto px-8 py-3 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition disabled:opacity-50 font-medium shadow-sm"
+        className="w-full md:w-auto px-8 py-3 bg-zinc-800 text-white border border-zinc-700 rounded-lg hover:bg-zinc-700 transition disabled:opacity-50 font-medium shadow-sm"
       >
         {loading ? 'Saving Event...' : 'Save Event'}
       </button>
