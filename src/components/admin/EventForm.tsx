@@ -35,11 +35,11 @@ export default function EventForm() {
   const [sourceLink, setSourceLink] = useState('')
   const [youtubeLink, setYoutubeLink] = useState('')
   const [locationCategory, setLocationCategory] = useState('')
+  const [location, setLocation] = useState('')
 
   // Specific Fields
   const [title, setTitle] = useState('')
   const [eventDate, setEventDate] = useState('')
-  const [location, setLocation] = useState('')
   const [targetType, setTargetType] = useState('')
   const [explosiveType, setExplosiveType] = useState('')
   const [perpetratorFaction, setPerpetratorFaction] = useState('')
@@ -71,6 +71,12 @@ export default function EventForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!lat || !lng) {
+      toast.error('Please select a location on the map')
+      return
+    }
+
     setLoading(true)
 
     const commonPayload = {
@@ -79,6 +85,7 @@ export default function EventForm() {
       source_link: sourceLink || null,
       youtube_link: youtubeLink || null,
       location_category: locationCategory || null,
+      location: location || null,
       lat,
       lng
     }
@@ -95,7 +102,7 @@ export default function EventForm() {
         tableName = 'bombings'
         payload = {
           ...commonPayload,
-          location, target_type: targetType || null, event_date: eventDate || null,
+          target_type: targetType || null, event_date: eventDate || null,
           explosive_type: explosiveType || null, perpetrator_faction: perpetratorFaction || null,
           casualty_count: casualtyCount || 0
         }
@@ -104,7 +111,7 @@ export default function EventForm() {
         tableName = 'massacres'
         payload = {
           ...commonPayload,
-          location, event_date: eventDate || null, perpetrator_faction: perpetratorFaction || null,
+          event_date: eventDate || null, perpetrator_faction: perpetratorFaction || null,
           victim_demographic: victimDemographic || null, casualty_count: casualtyCount || 0, weapons_used: weaponsUsed || null
         }
         break
@@ -112,7 +119,7 @@ export default function EventForm() {
         tableName = 'protests'
         payload = {
           ...commonPayload,
-          location, event_date: eventDate || null, estimated_participants: estimatedParticipants || 0,
+          event_date: eventDate || null, estimated_participants: estimatedParticipants || 0,
           demands: demands || null, security_response: securityResponse || null, casualties: casualtyCount || 0
         }
         break
@@ -121,7 +128,7 @@ export default function EventForm() {
         payload = {
           ...commonPayload,
           target_name: targetName || null, target_affiliation: targetAffiliation || null, perpetrator_name: perpetratorName || null,
-          event_date: eventDate || null, location, method: method || null
+          event_date: eventDate || null, method: method || null
         }
         break
       case 'Arrest':
@@ -171,6 +178,32 @@ export default function EventForm() {
       </div>
 
       <div className="space-y-4">
+        <h2 className="text-xl font-semibold text-white border-b border-zinc-800 pb-2">Geographic Location</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className={labelClass}>Place Name (City/Neighborhood)</label>
+            <input
+              type="text"
+              value={location}
+              onChange={e => setLocation(e.target.value)}
+              className={inputClass}
+              placeholder="e.g., Aleppo, Bab al-Hawa"
+            />
+          </div>
+          <div>
+            <label className={labelClass}>Site Type (Market, Hospital, etc.)</label>
+            <input
+              type="text"
+              value={locationCategory}
+              onChange={e => setLocationCategory(e.target.value)}
+              className={inputClass}
+              placeholder="e.g., Urban, Rural, Camp"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="space-y-4">
         <h2 className="text-xl font-semibold text-white border-b border-zinc-800 pb-2">Event Details</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -187,37 +220,19 @@ export default function EventForm() {
             </select>
           </div>
 
-          <div>
-            <label className={labelClass}>Location Category</label>
-            <input
-              type="text"
-              value={locationCategory}
-              onChange={e => setLocationCategory(e.target.value)}
-              className={inputClass}
-              placeholder="e.g., Urban, Rural, Camp"
-            />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           {(category === 'General Event' || category === 'Bombing' || category === 'Massacre' || category === 'Protest' || category === 'Assassination' || category === 'Regime Change') && (
             <div>
               <label className={labelClass}>Event Date</label>
               <input type="date" value={eventDate} onChange={e => setEventDate(e.target.value)} className={inputClass} />
             </div>
           )}
+        </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
           {category === 'General Event' && (
             <div>
               <label className={labelClass}>Title</label>
               <input type="text" value={title} onChange={e => setTitle(e.target.value)} className={inputClass} />
-            </div>
-          )}
-
-          {(category === 'Bombing' || category === 'Massacre' || category === 'Protest' || category === 'Assassination') && (
-            <div>
-              <label className={labelClass}>Location (Text)</label>
-              <input type="text" value={location} onChange={e => setLocation(e.target.value)} className={inputClass} />
             </div>
           )}
 

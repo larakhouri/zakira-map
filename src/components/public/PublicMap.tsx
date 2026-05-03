@@ -52,16 +52,20 @@ export default function PublicMap({ events, onEventClick }: PublicMapProps) {
         url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
       />
       
-      {events.map((event) => (
-        <Marker 
-          key={event.id}
-          position={[event.lat, event.lng]}
-          icon={createCustomIcon(event.event_type)}
-          eventHandlers={{
-            click: () => onEventClick(event)
-          }}
-        />
-      ))}
+      {events.map((event) => {
+        if (!event.lat || !event.lng) return null;
+        
+        return (
+          <Marker 
+            key={event.id}
+            position={[event.lat, event.lng]}
+            icon={createCustomIcon(event.event_type)}
+            eventHandlers={{
+              click: () => onEventClick(event)
+            }}
+          />
+        );
+      })}
     </MapContainer>
   )
 }
