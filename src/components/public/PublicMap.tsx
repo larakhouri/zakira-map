@@ -5,6 +5,16 @@ import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import { UnifiedMapEvent } from '@/types/database'
 
+// Fix Leaflet's default marker icons in Next.js
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41]
+});
+
 const EVENT_COLORS: Record<string, string> = {
   'General Event': '#64748b', // slate
   'Regime Change': '#dc2626', // red

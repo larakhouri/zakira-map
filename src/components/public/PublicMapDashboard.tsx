@@ -39,14 +39,11 @@ export default function PublicMapDashboard() {
 
   useEffect(() => {
     async function fetchEvents() {
-      const startDate = `${debouncedYear}-01-01`
-      const endDate = `${debouncedYear}-12-31`
-
       const { data, error } = await supabase
         .from('unified_map_events')
         .select('*')
-        .gte('event_date', startDate)
-        .lte('event_date', endDate)
+        .gte('event_date', `${debouncedYear}-01-01`)
+        .lte('event_date', `${debouncedYear}-12-31`)
 
       if (error) {
         console.error('Error fetching events:', error)
